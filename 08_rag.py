@@ -1,14 +1,16 @@
 """简单的 RAG（检索增强生成）示例。"""
 
-from langchain_openai import ChatOpenAI, OpenAIEmbeddings
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.runnables import RunnablePassthrough
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.documents import Document
 from langchain_community.vectorstores import Chroma
 from langchain_text_splitters import RecursiveCharacterTextSplitter
+from langchain_huggingface import HuggingFaceEmbeddings
+from langchain_ollama import ChatOllama
 
-model = ChatOpenAI(model="gpt-4o-mini", temperature=0)
+llm = ChatOllama(model="llama3.2:1b", temperature=0)
+
 
 # 1. 从原始文本创建文档
 raw_text = """
@@ -37,7 +39,7 @@ documents = text_splitter.create_documents([raw_text])
 print(f"Created {len(documents)} document chunks\n")
 
 # 2. 创建向量存储
-embeddings = OpenAIEmbeddings(model="text-embedding-3-small")
+embeddings = HuggingFaceEmbeddings(model_name="all-MiniLM-L6-v2")
 vectorstore = Chroma.from_documents(
     documents=documents,
     embedding=embeddings,
@@ -45,14 +47,15 @@ vectorstore = Chroma.from_documents(
 retriever = vectorstore.as_retriever(search_kwargs={"k": 3})
 
 # 3. RAG 链
-template = """Answer the question based on the following context:
-
+template = """<|system|>
+You are a helpful assistant. Answer the question based on the given context.</s>
+<|user|>
 Context:
 {context}
 
-Question: {question}
-
-Answer:"""
+Question: {question}</s>
+<|assistant|>
+"""
 prompt = ChatPromptTemplate.from_template(template)
 
 
@@ -66,7 +69,7 @@ rag_chain = (
         "question": RunnablePassthrough(),
     }
     | prompt
-    | model
+    | llm
     | StrOutputParser()
 )
 

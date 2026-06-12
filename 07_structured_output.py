@@ -4,10 +4,12 @@ from typing import Optional
 
 from pydantic import BaseModel, Field
 from langchain_openai import ChatOpenAI
+from langchain_anthropic import ChatAnthropic
 
-model = ChatOpenAI(model="gpt-4o-mini", temperature=0)
+# model = ChatOpenAI(model="gpt-4o-mini", temperature=0)
 
-
+# model = ChatOpenAI(model="gpt-5.5",baseURL="https://api.openai.com/v1",api_key="", temperature=0)
+model = ChatAnthropic(model="claude-opus-4-7",base_url="https://ai.router.team",api_key="sk-hzmSYtq0EDm0L3NpsnOVLCWYCRNJORM7Qf3RxfAcQGMwIlLG", temperature=0)
 # 1. 简单的结构化输出
 class Joke(BaseModel):
     setup: str = Field(description="The setup of the joke")

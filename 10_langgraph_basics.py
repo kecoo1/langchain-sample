@@ -35,6 +35,8 @@ def should_continue(state: SimpleState) -> str:
         return "continue"
     return "end"
 
+# 构建 SimpleState 的 StateGraph（必须先实例化 builder，再添加节点）
+builder = StateGraph(SimpleState)
 
 builder.add_node("a", step_a)
 builder.add_node("b", step_b)
@@ -47,8 +49,6 @@ builder.add_conditional_edges(
     "b", should_continue, {"continue": "c", "end": END}
 )
 builder.add_edge("c", END)
-
-builder = StateGraph(SimpleState)
 
 graph = builder.compile()
 result = graph.invoke({"messages": [HumanMessage(content="Start")], "step": 0})
@@ -92,7 +92,8 @@ def should_continue_fn(state: AgentState) -> str:
         return "tools"
     return "end"
 
-
+# 为 AgentState 创建 StateGraph
+agent_builder = StateGraph(AgentState)
 agent_builder.add_node("agent", call_model)
 agent_builder.add_node("tools", tool_node)
 agent_builder.set_entry_point("agent")
@@ -129,7 +130,8 @@ def chatbot(state: ChatState) -> ChatState:
     response = model.invoke(state["messages"])
     return {"messages": [response]}
 
-
+# 为聊天机器人创建 StateGraph
+chat_builder = StateGraph(ChatState)
 chat_builder.add_node("chatbot", chatbot)
 chat_builder.set_entry_point("chatbot")
 chat_builder.add_edge("chatbot", END)
