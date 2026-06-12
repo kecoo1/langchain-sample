@@ -1,0 +1,16 @@
+[project]
+name = "langchain-sample"
+version = "0.1.0"
+description = "LangChain sample projects"
+requires-python = ">=3.10"
+dependencies = [
+    "langchain>=0.3",
+    "langchain-core",
+    "langchain-openai",
+    "langchain-anthropic",
+    "langchain-ollama",
+    "langgraph",
+    "langchain-text-splitters",
+    "langchain-community",
+    "chromadb",
+]
