@@ -14,6 +14,10 @@ pip install -r requirements.txt
 export OPENAI_API_KEY="sk-..."
 # 可选
 export ANTHROPIC_API_KEY="sk-ant-..."
+
+# LangSmith 追踪（可选）
+export LANGCHAIN_TRACING_V2=true
+export LANGCHAIN_API_KEY="your-api-key"
 ```
 
 ## 示例列表
@@ -30,6 +34,7 @@ export ANTHROPIC_API_KEY="sk-ant-..."
 | `08_rag.py` | RAG (检索增强生成) | ⭐⭐⭐ |
 | `09_multimodal.py` | 多模态 (图片输入) | ⭐⭐ |
 | `10_langgraph_basics.py` | LangGraph 状态图、Agent、聊天机器人 | ⭐⭐⭐ |
+| `11_langsmith_demo.py` | LangSmith 追踪：链、Agent、LangGraph | ⭐⭐⭐ |
 
 ## 运行示例
 
@@ -39,4 +44,7 @@ python 01_basic_usage.py
 
 # 运行所有示例
 for f in *.py; do echo "=== $f ==="; python "$f"; done
+
+# 运行 LangSmith 追踪示例
+python 11_langsmith_demo.py
 ```

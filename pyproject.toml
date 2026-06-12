@@ -13,4 +13,5 @@ dependencies = [
     "langchain-text-splitters",
     "langchain-community",
     "chromadb",
+    "langsmith",
 ]
