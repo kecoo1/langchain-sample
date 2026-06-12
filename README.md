@@ -35,6 +35,16 @@ export LANGCHAIN_API_KEY="your-api-key"
 | `09_multimodal.py` | 多模态 (图片输入) | ⭐⭐ |
 | `10_langgraph_basics.py` | LangGraph 状态图、Agent、聊天机器人 | ⭐⭐⭐ |
 | `11_langsmith_demo.py` | LangSmith 追踪：链、Agent、LangGraph | ⭐⭐⭐ |
+| `12_langserve_basic.py` | LangServe API 部署 | ⭐⭐ |
+| `13_langchain_hub.py` | LangChain Hub Prompt 管理、版本控制 | ⭐⭐ |
+| `14_langgraph_advanced.py` | LangGraph 进阶：Supervisor、人类审批、嵌套子图 | ⭐⭐⭐ |
+| `15_rag_advanced.py` | RAG 进阶：混合检索、重排序、引用溯源、HyDE | ⭐⭐⭐ |
+| `16_langsmith_evaluation.py` | LangSmith 进阶：数据集评估、A/B 测试 | ⭐⭐⭐ |
+| `17_lcel_advanced_patterns.py` | LCEL 高级：.map/.reduce/.with_fallbacks/.with_retry | ⭐⭐⭐ |
+| `18_vector_databases.py` | 向量数据库：FAISS/Pinecone/Qdrant/PGVector 对比 | ⭐⭐ |
+| `19_document_loaders.py` | 文档加载：PDF/Web/JSON/CSV/Markdown/目录批量 | ⭐⭐ |
+| `20_callbacks_and_monitoring.py` | 回调和监控：Token追踪/延迟追踪/异步回调/审计日志 | ⭐⭐⭐ |
+| `21_multi_provider_llm.py` | 多提供商：Gemini/HuggingFace/Cohere 集成 | ⭐⭐ |
 
 ## 运行示例
 
