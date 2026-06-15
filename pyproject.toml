@@ -2,7 +2,7 @@
 name = "langchain-sample"
 version = "0.1.0"
 description = "LangChain sample projects"
-requires-python = ">=3.10"
+requires-python = ">=3.11"
 dependencies = [
     "langchain>=0.3",
     "langchain-core",
@@ -14,4 +14,6 @@ dependencies = [
     "langchain-community",
     "chromadb",
     "langsmith",
+    "deepagents",
+    "ragas",
 ]

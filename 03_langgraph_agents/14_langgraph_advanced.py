@@ -459,7 +459,7 @@ print(f"4. 重试机制结果: {final_state['messages'][-1].content[:200]}...\n"
 #   生产价值：提高系统鲁棒性，对最终用户透明
 #
 # 从基础到进阶的认知跃迁:
-#   10_langgraph_basics.py: 状态机 + 简单循环
+#   03_langgraph_agents/10_langgraph_basics.py: 状态机 + 简单循环
 #   本文件: 子图编排 + 人类审批 + 条件路由
 #   进阶方向:
 #     - 持久化存储（Redis/Postgres checkpointer 替代 MemorySaver）

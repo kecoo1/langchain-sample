@@ -109,10 +109,10 @@ executor_with_memory.invoke({"input": "What's my name?"})
 # =============================================================================
 # 教学备注：Agent（代理）的核心概念——从"单次工具调用"到"自主推理循环"
 # =============================================================================
-# 核心问题：04_tools.py 已经学了 bind_tools + 手动执行，为什么还要 Agent？
-#   关键区别：04_tools.py 是"模型说用什么工具，开发者在代码里调一次"
+# 核心问题：01_basics/04_tools.py 已经学了 bind_tools + 手动执行，为什么还要 Agent？
+#   关键区别：01_basics/04_tools.py 是"模型说用什么工具，开发者在代码里调一次"
 #     Agent 是"模型自己决定：是否要调用->调用哪个->看结果->再决定下一步"
-#   类比：04_tools.py 相当于"计算器"——你按按钮它给你结果；
+#   类比：01_basics/04_tools.py 相当于"计算器"——你按按钮它给你结果；
 #     Agent 相当于"数学家教"——它会自己思考"这一步该用加法还是公式"，调完工具再看结果决定下一步
 #   Agent 的本质：Observe -> Think -> Act -> Observe 的自主循环（ReAct 范式）
 #
@@ -173,7 +173,7 @@ executor_with_memory.invoke({"input": "What's my name?"})
 #     "force"：直接返回最后输出，可能不完整
 #   return_intermediate_steps=True：保留中间步骤，用于调试和展示思考过程
 #
-# 从 04_tools.py 到 05_agent.py 的思维转变：
+# 从 01_basics/04_tools.py 到 01_basics/05_agent.py 的思维转变：
 #   04：模型 -> tool_calls -> 开发者手动执行 -> 手动构造 ToolMessage -> 模型整合
 #   05：AgentExecutor 自动完成上述所有步骤，开发者只需 invoke 一次
 #   Agent 并不是"新东西"，而是"工具调用 + 循环 + 记忆 + 错误处理"的封装

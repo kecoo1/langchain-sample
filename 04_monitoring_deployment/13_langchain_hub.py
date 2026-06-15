@@ -149,11 +149,11 @@ test_cases = [
 
 for case in test_cases:
     # v1 翻译
-    result_v1 = v1_prompt | llm | lambda x: x.content
+    result_v1 = v1_prompt | llm | (lambda x: x.content)
     output_v1 = result_v1.invoke(case)
 
     # v2 翻译
-    result_v2 = v2_prompt | llm | lambda x: x.content
+    result_v2 = v2_prompt | llm | (lambda x: x.content)
     output_v2 = result_v2.invoke(case)
 
     print(f"   原文: {case['source']}")

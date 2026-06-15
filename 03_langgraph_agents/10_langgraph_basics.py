@@ -257,7 +257,7 @@ for msg in user_messages:
 #     invoke 完成后，框架自动把新消息写入 checkpointer
 #   类比：checkpointer 就像是数据库，thread_id 是主键
 #
-# 从 05_agent.py 到 10_langgraph_basics.py 的认知升级：
+# 从 05_agent.py (01_basics/) 到 10_langgraph_basics.py 的认知升级：
 #   05 中的 create_tool_calling_agent + AgentExecutor：
 #     是一个"封装好的黑盒"——你不知道循环是怎么实现的
 #     AgentExecutor 内部帮你做了：调用模型 -> 判断 -> 执行工具 -> 循环
