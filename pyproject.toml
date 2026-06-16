@@ -16,4 +16,5 @@ dependencies = [
     "langsmith",
     "deepagents",
     "ragas",
+    "langfuse",
 ]
