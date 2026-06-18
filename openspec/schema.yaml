@@ -1,0 +1,21 @@
+version: "1.0"
+spec:
+  proposal_path: "./proposal.md"
+  design_path: "./design.md"
+  tasks_path: "./tasks.md"
+
+development:
+  enforce_tdd: true
+  task_max_minutes: 5
+  test_coverage_threshold: 80
+  allow_unscheduled_refactor: false
+  tech_debt_separate: true
+
+validation:
+  require_spec_compliance: true
+  require_code_quality: true
+  require_security_scan: false
+  forbidden_patterns:
+    - "硬编码密钥"
+    - "裸SQL拼接"
+    - "未鉴权公开接口"

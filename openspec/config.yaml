@@ -1,0 +1,22 @@
+schema: spec-driven
+
+# Project context (optional)
+# This is shown to AI when creating artifacts.
+context: |
+  Tech stack: Python >=3.11, LangChain >=0.3, LangGraph, ChromaDB
+  Project: LangChain sample projects demonstrating LLM application patterns
+  Convention: modular examples with numbered files (01-35+), each independently runnable
+  LLM providers: OpenAI, Anthropic, Ollama (llama3.2:1b locally)
+  Testing: pytest with unittest-style tests
+  Package manager: uv
+  Monorepo structure: 01_basics/, 02_rag/, 03_langgraph_agents/, 04_monitoring_deployment/, 05_integrations_lcel/, 06_advanced_topics/
+
+# Per-artifact rules (optional)
+# Add custom rules for specific artifacts.
+# Example:
+#   rules:
+#     proposal:
+#       - Keep proposals under 500 words
+#       - Always include a "Non-goals" section
+#     tasks:
+#       - Break tasks into chunks of max 2 hours

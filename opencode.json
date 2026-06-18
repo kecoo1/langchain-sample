@@ -1,0 +1,58 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "command": {
+    "dev-new": {
+      "description": "完整新功能开发流程：需求讨论 → 规格产出 → 计划 → TDD 实现 → 校验 → 归档",
+      "template": "用户想开发一个新功能。加载 dev-flow 技能，按 Step1-6 完整执行：先通过 openspec-explore / openspec-propose 产出规范，brainstorming + writing-plans 写计划，再 TDD 实现，最后 verification-before-completion + openspec-archive-change 归档。每步产出存到 .opencode/openspec/。"
+    },
+    "dev-update": {
+      "description": "增量变更：从已有任务规格出发 → 实现 → 校验 → 归档",
+      "template": "用户有已存在的变更规范。加载 openspec-apply-change 技能，按任务清单逐个 TDD 实现，verification-before-completion 校验，最后 openspec-archive-change 归档。"
+    },
+    "dev-fix": {
+      "description": "快速 Bug 修复：跳过设计，直接调试 → TDD 修复 → 校验",
+      "template": "用户报告了一个 Bug。加载 systematic-debugging 技能定位根因，TDD 方式修复（先写失败测试→修复→通过），verification-before-completion 校验。不经过 openspec 流程，除非修复涉及架构变更。"
+    },
+    "dev-review": {
+      "description": "代码审查：审查已有代码，输出改进建议，不改动代码",
+      "template": "用户请求代码审查。加载 requesting-code-review 技能，全面审查代码的正确性、可维护性、性能、安全性。输出结构化反馈，不改动任何代码。"
+    }
+  },
+  "permission": {
+    "*": "ask",
+    "bash": {
+      "git *": "allow",
+      "npm *": "allow",
+      "mvn *": "allow",
+      "rm -rf /*": "deny",
+      "sudo *": "deny"
+    },
+    "file-read": {
+      "./.opencode/openspec/**": "allow",
+      "./.opencode/skills/**": "allow",
+      "./**": "allow"
+    },
+    "file-write": {
+      "./.opencode/openspec/**": "allow"
+    },
+    "read": {
+      "./**": "allow",
+      "~/**": "deny",
+      "/etc/**": "deny"
+    },
+    "edit": {
+      "./**": "allow",
+      "./.env": "ask",
+      "./package-lock.json": "ask",
+      "~/**": "deny",
+      "/etc/**": "deny"
+    },
+    "glob": { "./**": "allow" },
+    "grep": { "./**": "allow" },
+    "list": { "./**": "allow" },
+    "mkdir": { "./**": "allow" },
+    "webfetch": "allow",
+    "todowrite": "allow",
+    "question": "allow"
+  }
+}
