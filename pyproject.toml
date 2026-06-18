@@ -17,4 +17,6 @@ dependencies = [
     "deepagents",
     "ragas",
     "langfuse",
+    "rank_bm25",
+    "jieba",
 ]
