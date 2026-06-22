@@ -275,329 +275,297 @@ RAG_TOOLS = [vector_search, keyword_search, hybrid_search, evaluate_relevance]
 # ==============================================================================
 
 _VECTORSTORE, _BM25_RETRIEVER, _EMBEDDINGS, _CHUNKS = build_knowledge_base()
-print(f"知识库已初始化: {len(_CHUNKS)} 个文档块，{len(KNOWLEDGE_BASE)} 个分类\n")
 
 
-# ==============================================================================
-# 示例 1: 基础 RAG Agent
-# ==============================================================================
-print("=" * 60)
-print("示例 1: 基础 RAG Agent — create_deep_agent + RAG 工具")
-print("=" * 60)
+def run_all_examples():
+    """Execute all 6 Deep Agents RAG examples."""
+    print(f"知识库已初始化: {len(_CHUNKS)} 个文档块，{len(KNOWLEDGE_BASE)} 个分类\n")
 
-# Deep Agents 的 create_deep_agent 一行创建 Agent
-# 传入 RAG 工具后，Agent 自动获得检索能力
-# 替代写法：
-#   agent = create_deep_agent(model="openai:gpt-4o-mini", tools=RAG_TOOLS)
+    # ------------------------------------------------------------------
+    # 示例 1: 基础 RAG Agent
+    # ------------------------------------------------------------------
+    print("=" * 60)
+    print("示例 1: 基础 RAG Agent — create_deep_agent + RAG 工具")
+    print("=" * 60)
 
-if _DEEPAGENTS_AVAILABLE:
-    try:
-        agent = create_deep_agent(
-            model=f"ollama:{LLM_MODEL}",
-            tools=RAG_TOOLS,
-            system_prompt="""You are a RAG (Retrieval-Augmented Generation) assistant.
-You have access to search tools. When asked a question:
-1. Use vector_search for conceptual questions
-2. Use keyword_search for specific terms
-3. Use hybrid_search for mixed queries
-4. ALWAYS cite sources in your answer using [Doc1], [Doc2] format
-5. If results are insufficient, use evaluate_relevance and try again""",
-        )
+    # Deep Agents 的 create_deep_agent 一行创建 Agent
+    # 传入 RAG 工具后，Agent 自动获得检索能力
+    # 替代写法：
+    #   agent = create_deep_agent(model="openai:gpt-4o-mini", tools=RAG_TOOLS)
 
-        result = agent.invoke({
-            "messages": [{
-                "role": "user",
-                "content": "What is LangChain and what are its key components?",
-            }]
-        })
-        print(f"\n1.1 RAG Agent 回答:\n{result['messages'][-1].content[:400]}\n")
+    if _DEEPAGENTS_AVAILABLE:
+        try:
+            agent = create_deep_agent(
+                model=f"ollama:{LLM_MODEL}",
+                tools=RAG_TOOLS,
+                system_prompt="""You are a RAG assistant.
+        You have access to search tools. When asked a question:
+        1. Use vector_search for conceptual questions
+        2. Use keyword_search for specific terms
+        3. Use hybrid_search for mixed queries
+        4. ALWAYS cite sources using [Doc1], [Doc2] format
+        5. If results are insufficient, use evaluate_relevance and try again""",
+            )
 
-    except Exception as e:
-        print(f"   ⚠️  llama3.2:1b 工具调用可能失败: {str(e)[:120]}\n")
-else:
-    _check_available()
+            result = agent.invoke({
+                "messages": [{
+                    "role": "user",
+                    "content": "What is LangChain and what are its key components?",
+                }]
+            })
+            print(f"\n1.1 RAG Agent 回答:\n{result['messages'][-1].content[:400]}\n")
 
-print("1. 基础 RAG Agent 的核心价值:")
-print("   - create_deep_agent 一行代码创建 Agent")
-print("   - 工具自动注入，Agent 自主选择检索策略")
-print("   - 无需手动编排检索流程")
-print()
+        except Exception as e:
+            print(f"   ⚠️  llama3.2:1b 工具调用可能失败: {str(e)[:120]}\n")
+    else:
+        _check_available()
 
+    print("1. 基础 RAG Agent 的核心价值:")
+    print("   - create_deep_agent 一行代码创建 Agent")
+    print("   - 工具自动注入，Agent 自主选择检索策略")
+    print("   - 无需手动编排检索流程")
+    print()
 
-# ==============================================================================
-# 示例 2: 查询分解 — write_todos
-# ==============================================================================
-print("=" * 60)
-print("示例 2: 查询分解 — write_todos 多步规划")
-print("=" * 60)
+    # ------------------------------------------------------------------
+    # 示例 2: 查询分解 — write_todos
+    # ------------------------------------------------------------------
+    # Deep Agents 内置 TodoListMiddleware，自动处理多步骤任务
+    # 当遇到多部分问题时，Agent 会：
+    #   1. 分解问题为子查询
+    #   2. 为每个子查询创建 todo
+    #   3. 逐一检索并标记完成
+    #   4. 综合所有子查询结果
 
-# Deep Agents 内置 TodoListMiddleware，自动处理多步骤任务
-# 当遇到多部分问题时，Agent 会：
-#   1. 分解问题为子查询
-#   2. 为每个子查询创建 todo
-#   3. 逐一检索并标记完成
-#   4. 综合所有子查询结果
+    print("=" * 60)
+    print("示例 2: 查询分解 — write_todos 多步规划")
+    print("=" * 60)
 
-if _DEEPAGENTS_AVAILABLE:
-    try:
-        agent = create_deep_agent(
-            model=f"ollama:{LLM_MODEL}",
-            tools=RAG_TOOLS,
-            system_prompt="""You are a RAG assistant. When you receive a multi-part question:
-1. Use write_todos to break it down into sub-queries
-2. Search for each part separately using the appropriate tool
-3. Synthesize all results into a coherent answer
-4. Cite sources with [DocN]""",
-        )
+    if _DEEPAGENTS_AVAILABLE:
+        try:
+            agent = create_deep_agent(
+                model=f"ollama:{LLM_MODEL}",
+                tools=RAG_TOOLS,
+                system_prompt="""You are a RAG assistant. When you receive a multi-part question:
+        1. Use write_todos to break it down into sub-queries
+        2. Search for each part separately using the appropriate tool
+        3. Synthesize all results into a coherent answer
+        4. Cite sources with [DocN]""",
+            )
 
-        result = agent.invoke({
-            "messages": [{
-                "role": "user",
-                "content": "Compare LangChain agents and chains: what each one is for, and when should I use which?",
-            }]
-        })
-        print(f"\n2. 查询分解结果:\n{result['messages'][-1].content[:400]}\n")
+            result = agent.invoke({
+                "messages": [{
+                    "role": "user",
+                    "content": "Compare LangChain agents and chains: what each one is for, and when should I use which?",
+                }]
+            })
+            print(f"\n2. 查询分解结果:\n{result['messages'][-1].content[:400]}\n")
 
-    except Exception as e:
-        print(f"   跳过/错误: {str(e)[:80]}\n")
-else:
-    _check_available()
+        except Exception as e:
+            print(f"   跳过/错误: {str(e)[:80]}\n")
+    else:
+        _check_available()
 
-print("2. 查询分解的核心价值:")
-print("   - Agent 自动拆解复杂问题为子查询")
-print("   - write_todos 提供进度追踪")
-print("   - 综合多路检索结果为统一回答")
-print()
+    print("2. 查询分解的核心价值:")
+    print("   - Agent 自动拆解复杂问题为子查询")
+    print("   - write_todos 提供进度追踪")
+    print("   - 综合多路检索结果为统一回答")
+    print()
 
+    # ------------------------------------------------------------------
+    # 示例 3: 多检索器路由
+    # ------------------------------------------------------------------
+    # Agent 通过工具 description 理解每个检索策略的用途：
+    #   - vector_search: "Use for conceptual questions" → 概念性问题
+    #   - keyword_search: "Use for specific technical terms" → 精确术语
+    #   - hybrid_search: "Use when query contains both" → 混合场景
+    # Agent 的 LLM 根据问题内容决定选哪个工具
 
-# ==============================================================================
-# 示例 3: 多检索器路由
-# ==============================================================================
-print("=" * 60)
-print("示例 3: 多检索器路由 — Agent 自主选择检索策略")
-print("=" * 60)
+    print("=" * 60)
+    print("示例 3: 多检索器路由 — Agent 自主选择检索策略")
+    print("=" * 60)
 
-# Agent 通过工具 description 理解每个检索策略的用途：
-#   - vector_search: "Use for conceptual questions" → 概念性问题
-#   - keyword_search: "Use for specific technical terms" → 精确术语
-#   - hybrid_search: "Use when query contains both" → 混合场景
-# Agent 的 LLM 根据问题内容决定选哪个工具
+    if _DEEPAGENTS_AVAILABLE:
+        try:
+            agent = create_deep_agent(
+                model=f"ollama:{LLM_MODEL}",
+                tools=RAG_TOOLS,
+                system_prompt="""You are a RAG assistant. Choose the right search tool:
+        - For conceptual/meaning questions → vector_search
+        - For specific API/function names → keyword_search
+        - For mixed queries → hybrid_search
+        Cite sources with [DocN].""",
+            )
 
-if _DEEPAGENTS_AVAILABLE:
-    try:
-        agent = create_deep_agent(
-            model=f"ollama:{LLM_MODEL}",
-            tools=RAG_TOOLS,
-            system_prompt="""You are a RAG assistant. Choose the right search tool:
-- For conceptual/meaning questions → vector_search
-- For specific API/function names → keyword_search
-- For mixed queries → hybrid_search
-Cite sources with [DocN].""",
-        )
+            result1 = agent.invoke({
+                "messages": [{
+                    "role": "user",
+                    "content": "Explain how RAG pipeline design works in LangChain.",
+                }]
+            })
+            print(f"\n3.1 概念性问题:\n{result1['messages'][-1].content[:300]}\n")
 
-        # 概念性问题（应选 vector_search）
-        result1 = agent.invoke({
-            "messages": [{
-                "role": "user",
-                "content": "Explain how RAG pipeline design works in LangChain.",
-            }]
-        })
-        print(f"\n3.1 概念性问题:\n{result1['messages'][-1].content[:300]}\n")
+            result2 = agent.invoke({
+                "messages": [{
+                    "role": "user",
+                    "content": "What is create_tool_calling_agent and how is it different from create_react_agent?",
+                }]
+            })
+            print(f"\n3.2 精确术语问题:\n{result2['messages'][-1].content[:300]}\n")
 
-        # 精确术语问题（应选 keyword_search）
-        result2 = agent.invoke({
-            "messages": [{
-                "role": "user",
-                "content": "What is create_tool_calling_agent and how is it different from create_react_agent?",
-            }]
-        })
-        print(f"\n3.2 精确术语问题:\n{result2['messages'][-1].content[:300]}\n")
+        except Exception as e:
+            print(f"   跳过/错误: {str(e)[:80]}\n")
+    else:
+        _check_available()
 
-    except Exception as e:
-        print(f"   跳过/错误: {str(e)[:80]}\n")
-else:
-    _check_available()
+    print("3. 多检索器路由的核心价值:")
+    print("   - Agent 通过 tool description 理解工具用途")
+    print("   - 不同问题类型自动选不同检索策略")
+    print("   - 与 37_search_agent.py 的条件边区别：")
+    print("     37 用硬编码路由，这里用 Agent 自主决策")
+    print()
 
-print("3. 多检索器路由的核心价值:")
-print("   - Agent 通过 tool description 理解工具用途")
-print("   - 不同问题类型自动选不同检索策略")
-print("   - 与 37_search_agent.py 的条件边区别：")
-print("     37 用硬编码路由，这里用 Agent 自主决策")
-print()
+    # ------------------------------------------------------------------
+    # 示例 4: 结果评估与迭代
+    # ------------------------------------------------------------------
+    # Agent 可以在检索后调用 evaluate_relevance 判断结果是否足够
+    # 如果不足，Agent 可以换关键词或换检索策略重新搜索
+    # 这是 Agent RAG 相比固定 RAG pipeline 的核心优势
 
+    print("=" * 60)
+    print("示例 4: 结果评估与迭代 — evaluate_relevance + 重检索")
+    print("=" * 60)
 
-# ==============================================================================
-# 示例 4: 结果评估与迭代
-# ==============================================================================
-print("=" * 60)
-print("示例 4: 结果评估与迭代 — evaluate_relevance + 重检索")
-print("=" * 60)
+    if _DEEPAGENTS_AVAILABLE:
+        try:
+            agent = create_deep_agent(
+                model=f"ollama:{LLM_MODEL}",
+                tools=RAG_TOOLS,
+                system_prompt="""You are a RAG assistant. For each question:
+        1. Search using the appropriate tool
+        2. Call evaluate_relevance to check if results are sufficient
+        3. If insufficient, try a different search tool or query terms
+        4. Repeat up to 3 times max
+        5. Answer with what you have, citing sources""",
+            )
 
-# Agent 可以在检索后调用 evaluate_relevance 判断结果是否足够
-# 如果不足，Agent 可以换关键词或换检索策略重新搜索
-# 这是 Agent RAG 相比固定 RAG pipeline 的核心优势
+            result = agent.invoke({
+                "messages": [{
+                    "role": "user",
+                    "content": "What are the differences between OpenAI and Ollama for production use?",
+                }]
+            })
+            print(f"\n4. 评估与迭代结果:\n{result['messages'][-1].content[:400]}\n")
 
-if _DEEPAGENTS_AVAILABLE:
-    try:
-        agent = create_deep_agent(
-            model=f"ollama:{LLM_MODEL}",
-            tools=RAG_TOOLS,
-            system_prompt="""You are a RAG assistant. For each question:
-1. Search using the appropriate tool
-2. Call evaluate_relevance to check if results are sufficient
-3. If insufficient, try a different search tool or query terms
-4. Repeat up to 3 times max
-5. Answer with what you have, citing sources""",
-        )
+        except Exception as e:
+            print(f"   跳过/错误: {str(e)[:80]}\n")
+    else:
+        _check_available()
 
-        result = agent.invoke({
-            "messages": [{
-                "role": "user",
-                "content": "What are the differences between OpenAI and Ollama for production use?",
-            }]
-        })
-        print(f"\n4. 评估与迭代结果:\n{result['messages'][-1].content[:400]}\n")
+    print("4. 结果评估与迭代的核心价值:")
+    print("   - Agent 自主判断结果是否足够")
+    print("   - 不足则自动调整策略重搜")
+    print("   - 固定 RAG pipeline 不具备这种自适应能力")
+    print()
 
-    except Exception as e:
-        print(f"   跳过/错误: {str(e)[:80]}\n")
-else:
-    _check_available()
+    # ------------------------------------------------------------------
+    # 示例 5: 多源信息融合与溯源引用
+    # ------------------------------------------------------------------
+    # 当 Agent 从多个工具获取结果时，会自动合并去重
+    # 通过 metadata 中的 title/category 信息实现溯源
+    # 最终回答以 [Doc1][Doc2] 格式引用来源
 
-print("4. 结果评估与迭代的核心价值:")
-print("   - Agent 自主判断结果是否足够")
-print("   - 不足则自动调整策略重搜")
-print("   - 固定 RAG pipeline 不具备这种自适应能力")
-print()
+    print("=" * 60)
+    print("示例 5: 多源信息融合与溯源引用")
+    print("=" * 60)
 
+    if _DEEPAGENTS_AVAILABLE:
+        try:
+            agent = create_deep_agent(
+                model=f"ollama:{LLM_MODEL}",
+                tools=RAG_TOOLS,
+                system_prompt="""You are a RAG assistant. When answering:
+        1. Search from MULTIPLE sources using different tools
+        2. Combine and deduplicate information
+        3. Cite each source as [DocN] in your answer
+        4. At the end, list all referenced sources with their titles
+        5. If sources conflict, mention both perspectives""",
+            )
 
-# ==============================================================================
-# 示例 5: 多源信息融合与溯源引用
-# ==============================================================================
-print("=" * 60)
-print("示例 5: 多源信息融合与溯源引用")
-print("=" * 60)
+            result = agent.invoke({
+                "messages": [{
+                    "role": "user",
+                    "content": "How do memory systems work in LangChain? What types are available?",
+                }]
+            })
+            print(f"\n5. 多源融合回答:\n{result['messages'][-1].content[:400]}\n")
 
-# 当 Agent 从多个工具获取结果时，会自动合并去重
-# 通过 metadata 中的 title/category 信息实现溯源
-# 最终回答以 [Doc1][Doc2] 格式引用来源
+        except Exception as e:
+            print(f"   跳过/错误: {str(e)[:80]}\n")
+    else:
+        _check_available()
 
-if _DEEPAGENTS_AVAILABLE:
-    try:
-        agent = create_deep_agent(
-            model=f"ollama:{LLM_MODEL}",
-            tools=RAG_TOOLS,
-            system_prompt="""You are a RAG assistant. When answering:
-1. Search from MULTIPLE sources using different tools
-2. Combine and deduplicate information
-3. Cite each source as [DocN] in your answer
-4. At the end, list all referenced sources with their titles
-5. If sources conflict, mention both perspectives""",
-        )
+    print("5. 多源融合与溯源引用的核心价值:")
+    print("   - 多检索器结果自动合并去重")
+    print("   - 引用溯源增加回答可信度")
+    print("   - 用户可以追溯信息来源")
+    print()
 
-        # 使用 hybrid_search 自动获取多源结果
-        result = agent.invoke({
-            "messages": [{
-                "role": "user",
-                "content": "How do memory systems work in LangChain? What types are available?",
-            }]
-        })
-        print(f"\n5. 多源融合回答:\n{result['messages'][-1].content[:400]}\n")
+    # ------------------------------------------------------------------
+    # 示例 6: 人机协同 + 虚拟文件系统
+    # ------------------------------------------------------------------
+    print("=" * 60)
+    print("示例 6: 人机协同 + 虚拟文件系统 — interrupt_on")
+    print("=" * 60)
 
-    except Exception as e:
-        print(f"   跳过/错误: {str(e)[:80]}\n")
-else:
-    _check_available()
+    if _DEEPAGENTS_AVAILABLE:
+        try:
+            from langgraph.checkpoint.memory import MemorySaver
 
-print("5. 多源融合与溯源引用的核心价值:")
-print("   - 多检索器结果自动合并去重")
-print("   - 引用溯源增加回答可信度")
-print("   - 用户可以追溯信息来源")
-print()
+            checkpointer = MemorySaver()
 
+            agent = create_deep_agent(
+                model=f"ollama:{LLM_MODEL}",
+                tools=RAG_TOOLS,
+                interrupt_on={"write_file": True},
+                checkpointer=checkpointer,
+                system_prompt="""You are a RAG research assistant.
+        When asked to research a topic:
+        1. Search using your RAG tools
+        2. Write the findings to a file for persistence
+        3. Before writing, pause for human approval
+        4. Summarize what you found""",
+            )
 
-# ==============================================================================
-# 示例 6: 人机协同 + 虚拟文件系统
-# ==============================================================================
-print("=" * 60)
-print("示例 6: 人机协同 + 虚拟文件系统 — interrupt_on")
-print("=" * 60)
+            print("   演示配置（不实际运行 interrupt）:")
+            print(f"   - interrupt_on: {{'write_file': True}}")
+            print(f"   - checkpointer: MemorySaver")
+            print(f"   - 流程:")
+            print("     1. Agent 检索信息")
+            print("     2. 调用 write_file 保存报告")
+            print("     3. ⏸ 暂停等待审批")
+            print("     4. resume={'approved': True} → 继续")
+            print("     5. resume={'approved': False} → 拒绝")
+            print()
 
-# 使用 interrupt_on 配置，Agent 写文件前暂停等待人工审批
-# 结合虚拟文件系统，Agent 可以将检索报告保存到文件系统
-#
-# 替代写法（用更强模型）：
-#   agent = create_deep_agent(
-#       model="openai:gpt-4o-mini",
-#       interrupt_on={"write_file": True},
-#       checkpointer=MemorySaver(),
-#   )
+        except Exception as e:
+            print(f"   跳过: {e}\n")
+    else:
+        _check_available()
 
-if _DEEPAGENTS_AVAILABLE:
-    try:
-        from langgraph.checkpoint.memory import MemorySaver
+    print("6. 人机协同的核心价值:")
+    print("   - 关键操作（写文件、保存报告）需人工审批")
+    print("   - 适合需要审核的场景：研究报告、分析报告")
+    print("   - interrupt_on 不依赖模型推理能力")
+    print()
 
-        checkpointer = MemorySaver()
+    # ------------------------------------------------------------------
+    # 附录：模型能力评估
+    # ------------------------------------------------------------------
+    print("=" * 60)
+    print("附录: 模型能力评估 — Agent RAG 场景")
+    print("=" * 60)
 
-        agent = create_deep_agent(
-            model=f"ollama:{LLM_MODEL}",
-            tools=RAG_TOOLS,
-            interrupt_on={"write_file": True},
-            checkpointer=checkpointer,
-            system_prompt="""You are a RAG research assistant.
-When asked to research a topic:
-1. Search using your RAG tools
-2. Write the findings to a file for persistence
-3. Before writing, pause for human approval
-4. Summarize what you found""",
-        )
-
-        print("   演示配置（不实际运行 interrupt）:")
-        print(f"   - interrupt_on: {{'write_file': True}}")
-        print(f"   - checkpointer: MemorySaver")
-        print(f"   - 流程:")
-        print("     1. Agent 检索信息")
-        print("     2. 调用 write_file 保存报告")
-        print("     3. ⏸ 暂停等待审批")
-        print("     4. resume={'approved': True} → 继续")
-        print("     5. resume={'approved': False} → 拒绝")
-        print()
-
-        # 实际运行时，invoke 会暂停在 write_file 处：
-        # result = agent.invoke(
-        #     {"messages": [{"role": "user",
-        #       "content": "Research LangChain memory systems and save a report."}]},
-        #     config={"configurable": {"thread_id": "rag_demo_1"}},
-        # )
-        # # Agent writes file → interrupt!
-        # # 人工查看报告内容:
-        # print(agent.get_state(...).values)
-        # # 批准后恢复:
-        # result = agent.invoke(
-        #     None,
-        #     config={"configurable": {"thread_id": "rag_demo_1"}},
-        #     resume={"approved": True},
-        # )
-
-    except Exception as e:
-        print(f"   跳过: {e}\n")
-else:
-    _check_available()
-
-print("6. 人机协同的核心价值:")
-print("   - 关键操作（写文件、保存报告）需人工审批")
-print("   - 适合需要审核的场景：研究报告、分析报告")
-print("   - interrupt_on 不依赖模型推理能力")
-print()
-
-
-# ==============================================================================
-# 附录：模型能力评估（Agent RAG 场景）
-# ==============================================================================
-print("=" * 60)
-print("附录: 模型能力评估 — Agent RAG 场景")
-print("=" * 60)
-
-print("""
+    print("""
         Agent RAG 不同于普通 RAG，对模型有更高的 tool calling 和 reasoning 要求：
 
         能力                      | llama3.2:1b    | qwen2.5:7b     | gpt-4o-mini
@@ -618,7 +586,7 @@ print("""
           4. anthropic:claude-sonnet-4-6 — 最强 Agent 能力
 
         参考: https://github.com/langchain-ai/deepagents/tree/main/libs/evals
-""")
+    """)
 
 
 # ==============================================================================
@@ -626,6 +594,7 @@ print("""
 # ==============================================================================
 
 if __name__ == "__main__":
+    run_all_examples()
     print("=" * 60)
     print("Deep Agents RAG — 全部示例执行完成")
     print("=" * 60)
