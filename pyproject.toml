@@ -5,7 +5,7 @@ description = "LangChain sample projects"
 requires-python = ">=3.11"
 dependencies = [
     "langchain>=0.3",
-    "langchain-core",
+    "langchain-core>=0.3.86",
     "langchain-openai",
     "langchain-anthropic",
     "langchain-ollama",
@@ -20,4 +20,7 @@ dependencies = [
     "rank_bm25",
     "jieba",
     "tokenizers<=0.23.0",
+    "langchain-mcp>=0.2.1",
+    "langchain-mcp-adapters>=0.2.0",
+    "fastmcp>=3.4.4",
 ]
